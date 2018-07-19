@@ -6,12 +6,12 @@
   
   <link href="http://localhost:3000/"/>
   <id>http://localhost:3000/</id>
-  <updated>2017-10-11T01:20:33Z</updated>
+  <updated>2018-07-18T22:55:33Z</updated>
   <author>
     <name>Guilherme Leobas</name>
     <email>guilhermel@dcc.ufmg.br</email>
   </author>
-  <rights type="text">Copyright © 2017 Guilherme Leobas. All rights reserved.</rights>
+  <rights type="text">Copyright © 2018 Guilherme Leobas. All rights reserved.</rights>
   
   <entry>
   <title type="text">A Full and Comprehensive Style Test (HTML)</title>
@@ -463,10 +463,9 @@ c.draw = function() {
     <span class="nl">width</span><span class="p">:</span> <span class="m">100%</span><span class="p">;</span>
 <span class="p">}</span></code></pre></figure>
 
-<div class="highlighter-rouge"><pre class="highlight"><code>No language indicated, so no syntax highlighting.
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>No language indicated, so no syntax highlighting.
 But let's throw in a &lt;b&gt;tag&lt;/b&gt;.
-</code></pre>
-</div>
+</code></pre></div></div>
 
 <div class="divider"></div>
 
@@ -560,10 +559,10 @@ But let's throw in a &lt;b&gt;tag&lt;/b&gt;.
 <div class="footnotes">
   <ol>
     <li id="fn:1">
-      <p>Footnote number one yeah baby!&nbsp;<a href="#fnref:1" class="reversefootnote">&#8617;</a></p>
+      <p>Footnote number one yeah baby! <a href="#fnref:1" class="reversefootnote">&#8617;</a></p>
     </li>
     <li id="fn:2">
-      <p>A footnote you can link to - <a href="#">click here!</a>&nbsp;<a href="#fnref:2" class="reversefootnote">&#8617;</a></p>
+      <p>A footnote you can link to - <a href="#">click here!</a> <a href="#fnref:2" class="reversefootnote">&#8617;</a></p>
     </li>
   </ol>
 </div>
