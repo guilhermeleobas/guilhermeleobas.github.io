@@ -2,6 +2,7 @@ baseURL = "http://guilhermeleobas.github.io/"
 languageCode = "en-us"
 title = "Guilherme Leobas"
 theme = "hugo-goa"
+publishdir = "docs/"
 
 [params]
 	author = "Guilherme Leobas"
