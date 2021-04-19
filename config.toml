@@ -1,0 +1,52 @@
+baseURL = "http://guilhermeleobas.github.io/"
+languageCode = "en-us"
+title = "Hi!"
+theme = "hugo-goa"
+
+[params]
+	author = "Guilherme Leobas"
+	description = "Compiler enthusiast, Amateur triathlete and Open-Source at [@quansightai](https://twitter.com/quansightai)"
+	authorimage = "img.jpg"
+	dateformat = "Jan 2, 2006"
+
+## Social Accounts
+[params.social]
+	github = "guilhermeleobas"
+	linkedin = "guilhermeleobas"
+	twitter = "gvleobas"
+
+## Extras
+[params.extra]
+	poweredby = true
+	highlightjs = true
+	socialmarkup = true
+	toc = true
+	displayrssicon = false
+
+
+## Main Menu
+[[menu.main]]
+    name = "about"
+    identifier = "about"
+    weight = 100
+    url = "/about/"
+[[menu.main]]
+    name = "blog"
+    weight = 200
+    identifier = "blog"
+    url = "/blog/"
+[[menu.main]]
+    name = "projects"
+    identifier = "projects"
+    weight = 300
+    url = "/projects/"
+[[menu.main]]
+    name = "publications"
+    identifier = "publications"
+    weight = 400
+    url = "/publications/"
+[[menu.main]]
+	name = "resumé"
+	identifier = "resumé"
+	weight = 500
+	url = "https://pt.overleaf.com/read/kyykyrmmgjdj"

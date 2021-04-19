@@ -1,0 +1,55 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>Hi!</title>
+    <link>http://guilhermeleobas.github.io/</link>
+    <description>Recent content on Hi!</description>
+    <generator>Hugo -- gohugo.io</generator>
+    <language>en-us</language>
+    <lastBuildDate>Thu, 25 Feb 2021 00:00:00 +0000</lastBuildDate><atom:link href="http://guilhermeleobas.github.io/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>Enhancements to Numba&#39;s guvectorize decorator</title>
+      <link>http://guilhermeleobas.github.io/blog/enhancements-numba/</link>
+      <pubDate>Thu, 25 Feb 2021 00:00:00 +0000</pubDate>
+      
+      <guid>http://guilhermeleobas.github.io/blog/enhancements-numba/</guid>
+      <description>Note: This article originally appeared in Quansight Labs blog.</description>
+    </item>
+    
+    <item>
+      <title>About Me</title>
+      <link>http://guilhermeleobas.github.io/about/</link>
+      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+      
+      <guid>http://guilhermeleobas.github.io/about/</guid>
+      <description>Work Hi, my name is Guilherme Leobas. I am currently working at @quansightai as a Software Engineer. Before joining Quansight, I was a MSc student at the Federal University of Minas Gerais (dcc/ufmg) working with compiler optimizations under the supervision of professor Fernando Magno.
+As part of my work at Quansight, I have contributed to a number of open source softwares:
+ Numba, a NumPy aware JIT compiler using LLVM RBC, a remote JIT compiler built on top of Numba OmniSciDB, one of the fastest SQL engine in the world PyTorch, an open source ML framework   Free time I am also an amateur triathlete.</description>
+    </item>
+    
+    <item>
+      <title>Projects</title>
+      <link>http://guilhermeleobas.github.io/projects/</link>
+      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+      
+      <guid>http://guilhermeleobas.github.io/projects/</guid>
+      <description>  Benchmarks - A collection of more than 220 benchmarks used by compilers engineers to measure compiler optimizations.
+  TF - A simple test framework built using bash to compile, instrument and profile benchmarks.
+  cftool - Get inputs and outputs for a specific problem or contest on Codeforces or URI.
+  IRView - Generate dot/pdf files of llvm IR from Sublime Text
+  </description>
+    </item>
+    
+    <item>
+      <title>Publications</title>
+      <link>http://guilhermeleobas.github.io/publications/</link>
+      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+      
+      <guid>http://guilhermeleobas.github.io/publications/</guid>
+      <description>Guilherme Vieira Leobas and Fernando Magno Quintão Pereira. Semiring Optimizations: Dynamic Elision of Expressions with Identity and Absorbing Elements. OOPSLA 2020.
+  Caio Lima, Junio Cezar, Guilherme Vieira Leobas, Erven Rohou and Fernando Magno Quintão Pereira. Guided Just-in-Time Specialization. Science of Computer Programming, 185, 2020.
+  Fernando Magno Quintão Pereira, Guilherme Vieira Leobas and Abdoulaye Gamatié. Static Prediction of Silent Stores. ACM Transactions on Architecture and Code Optimization.</description>
+    </item>
+    
+  </channel>
+</rss>
