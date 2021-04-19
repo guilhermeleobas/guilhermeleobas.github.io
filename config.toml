@@ -1,13 +1,18 @@
 baseURL = "https://guilhermeleobas.github.io/"
 languageCode = "en-us"
-title = "Guilherme Leobas"
 theme = "hugo-goa"
-publishdir = "docs/"
+
 builddrafts = false
 canonifyurls = false
 
+publishdir = "docs/"
+contentdir = "content"
+layoutdir = "layouts"
+# publishdir = "public"
+
 [params]
 	author = "Guilherme Leobas"
+	title = "Guilherme Leobas"
 	description = "Compiler enthusiast, Amateur triathlete and Open-Source at [@quansightai](https://twitter.com/quansightai)"
 	authorimage = "img.jpg"
 	dateformat = "Jan 2, 2006"
