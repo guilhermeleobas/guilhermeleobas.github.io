@@ -1,6 +1,6 @@
 baseURL = "http://guilhermeleobas.github.io/"
 languageCode = "en-us"
-title = "Hi!"
+title = "Guilherme Leobas"
 theme = "hugo-goa"
 
 [params]
