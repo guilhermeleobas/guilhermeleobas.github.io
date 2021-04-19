@@ -1,18 +1,18 @@
 <?xml version="1.0" encoding="utf-8" standalone="yes"?>
 <rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
   <channel>
-    <title>Categories on Guilherme Leobas</title>
-    <link>http://guilhermeleobas.github.io/categories/</link>
-    <description>Recent content in Categories on Guilherme Leobas</description>
+    <title>Categories on </title>
+    <link>https://guilhermeleobas.github.io/categories/</link>
+    <description>Recent content in Categories on </description>
     <generator>Hugo -- gohugo.io</generator>
     <language>en-us</language>
-    <lastBuildDate>Thu, 25 Feb 2021 00:00:00 +0000</lastBuildDate><atom:link href="http://guilhermeleobas.github.io/categories/index.xml" rel="self" type="application/rss+xml" />
+    <lastBuildDate>Thu, 25 Feb 2021 00:00:00 +0000</lastBuildDate><atom:link href="https://guilhermeleobas.github.io/categories/index.xml" rel="self" type="application/rss+xml" />
     <item>
       <title>numba</title>
-      <link>http://guilhermeleobas.github.io/categories/numba/</link>
+      <link>https://guilhermeleobas.github.io/categories/numba/</link>
       <pubDate>Thu, 25 Feb 2021 00:00:00 +0000</pubDate>
       
-      <guid>http://guilhermeleobas.github.io/categories/numba/</guid>
+      <guid>https://guilhermeleobas.github.io/categories/numba/</guid>
       <description></description>
     </item>
     
