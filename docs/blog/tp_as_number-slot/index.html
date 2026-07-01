@@ -1,0 +1,306 @@
+<!DOCTYPE html>
+<html lang="en-us">
+
+    <head>
+
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <meta http-equiv="content-type" content="text/html; charset=utf-8">
+
+        
+        <link rel="preconnect" href="https://cdn.jsdelivr.net" crossorigin>
+        <link rel="preconnect" href="https://fonts.googleapis.com">
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link rel="dns-prefetch" href="https://cdnjs.cloudflare.com">
+
+        
+        
+
+        <title>
+               - The tp_as_number Slot and Binary Operation Dispatch in CPython 
+        </title>
+
+        <meta name="generator" content="Hugo 0.163.3">
+
+        
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/default.min.css">
+        
+
+        <link rel="stylesheet"
+            href="https://fonts.googleapis.com/css2?family=Lato:wght@300;400&family=Roboto+Slab:wght@400;700&family=Roboto:ital,wght@0,300;0,400;0,500;0,700;1,300;1,400;1,500;1,700" />
+        <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet"
+            integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH"
+            crossorigin="anonymous" />
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
+        <link rel="stylesheet" href="https://guilhermeleobas.github.io/css/main.css">
+        <link rel="stylesheet" href="https://guilhermeleobas.github.io/css/custom.css">
+
+        <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png">
+        <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png">
+        <link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png">
+        <link rel="manifest" href="/site.webmanifest">
+        <meta name="theme-color" content="#ffffff"></head>
+
+    <body lang="en-us" class="section-blog">
+        <div class="container my-auto">
+
+<header class="text-start title">
+  <h1 class="title">The tp_as_number Slot and Binary Operation Dispatch in CPython</h1>
+</header>
+
+<section id="category-pane" class="meta">
+  
+  <div class="d-flex flex-column flex-md-row justify-content-between">
+    <h6 class="text-start meta">
+       PUBLISHED ON JUN 30, 2026
+      
+      / 7 MIN READ
+      
+      
+      
+      —
+      
+      
+      <a class="meta"
+        href="/categories/pytorch">PYTORCH</a>
+      
+      
+      
+    </h6>
+  </div>
+  
+</section>
+
+<section id="content-pane">
+  <div class="text-justify content">
+    
+    <nav id="TableOfContents">
+  <ul>
+    <li><a href="#background">Background</a>
+      <ul>
+        <li><a href="#torchdynamo">TorchDynamo</a></li>
+        <li><a href="#pytypeobject-and-tp-slots"><code>PyTypeObject</code> and tp slots</a></li>
+        <li><a href="#the-tp_as_number-slot">The <code>tp_as_number</code> slot</a></li>
+      </ul>
+    </li>
+    <li><a href="#motivation">Motivation</a></li>
+    <li><a href="#the-dispatch-algorithm">The dispatch algorithm</a>
+      <ul>
+        <li><a href="#the-slot1bin-macro">The <code>SLOT1BIN</code> macro</a></li>
+      </ul>
+    </li>
+    <li><a href="#the-new-dict__or__-implementation">The new <code>dict.__or__</code> implementation</a></li>
+    <li><a href="#leveraging-the-cpython-test-suite">Leveraging the CPython test suite</a></li>
+    <li><a href="#conclusion-and-next-steps">Conclusion and next steps</a></li>
+    <li><a href="#references">References</a></li>
+  </ul>
+</nav>
+    
+    <p><strong>Note</strong>: This article originally appeared in <a href="https://openteams.com/tp-as-number-slot-and-binary-dispatch/">OpenTeams blog</a>.</p>
+<p>Recently Animesh Jain from Meta published a <a href="https://docs.pytorch.org/devlogs/dynamo/2026-05-13-agent-friendly-dynamo/">blogpost</a> about the work we are doing in Dynamo. The gist of it is that we are refactoring Dynamo&rsquo;s object model to mirror CPython <a href="https://docs.python.org/3/c-api/typeobj.html#tp-slots">PyTypeObject slots</a>. Given that, I thought it would be interesting to write a follow-up post about one small corner of that work: the <code>tp_as_number</code> slot, and how binary operations are dispatched in CPython.</p>
+<h2 id="background">Background</h2>
+<h3 id="torchdynamo">TorchDynamo</h3>
+<p>TorchDynamo (or simply Dynamo) is the JIT compiler that PyTorch uses to make PyTorch programs faster. Dynamo hooks into the eval frame API (<a href="https://peps.python.org/pep-0523/">PEP 523</a>) to intercept the Python bytecode before it runs and symbolically trace it to an intermediate representation called <em>FX Graph</em>. It is worth mentioning that Dynamo is not a general-purpose Python implementation. It is designed to optimize a very specific class of programs and it works quite well for that purpose.</p>
+<h3 id="pytypeobject-and-tp-slots"><code>PyTypeObject</code> and tp slots</h3>
+<p>Every Python object has a type, and every type is represented internally by a <code>PyTypeObject</code>. For instance, the <code>int</code> and <code>str</code> types below are represented by <code>PyTypeObject</code> instances:</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;-webkit-text-size-adjust:none;"><code class="language-python" data-lang="python"><span style="display:flex;"><span>type(<span style="color:#ae81ff">42</span>)    <span style="color:#75715e"># &lt;class &#39;int&#39;&gt;</span>
+</span></span><span style="display:flex;"><span>type(<span style="color:#e6db74">&#34;hi&#34;</span>)  <span style="color:#75715e"># &lt;class &#39;str&#39;&gt;</span>
+</span></span></code></pre></div><p>The <code>PyTypeObject</code> is a large struct that defines a type&rsquo;s behavior through slots. Each slot is a pointer to a function that implements a specific behavior of a type. For example, the <code>tp_as_number</code> slot is used for types that support numeric-style operations. The <code>tp_iter</code> and <code>tp_iternext</code> slots are used for types that support iteration. The <code>tp_call</code> slot is used for callable types, and so on.</p>
+<h3 id="the-tp_as_number-slot">The <code>tp_as_number</code> slot</h3>
+<p>The <code>tp_as_number</code> slot is a pointer to a <a href="https://github.com/python/cpython/blob/13d8f452a11dc58690cb7aba0cad39bcca18f465/Include/cpython/object.h#L60-L105"><code>PyNumberMethods</code></a> struct, which contains function pointers for various numeric operations:</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;-webkit-text-size-adjust:none;"><code class="language-c" data-lang="c"><span style="display:flex;"><span><span style="color:#66d9ef">typedef</span> <span style="color:#66d9ef">struct</span> {
+</span></span><span style="display:flex;"><span>    binaryfunc nb_add;
+</span></span><span style="display:flex;"><span>    binaryfunc nb_subtract;
+</span></span><span style="display:flex;"><span>    binaryfunc nb_multiply;
+</span></span><span style="display:flex;"><span>    <span style="color:#75715e">// ...
+</span></span></span><span style="display:flex;"><span>    binaryfunc nb_inplace_add;
+</span></span><span style="display:flex;"><span>    <span style="color:#75715e">// ...
+</span></span></span><span style="display:flex;"><span>    unaryfunc nb_index;
+</span></span><span style="display:flex;"><span>    <span style="color:#75715e">// ...
+</span></span></span><span style="display:flex;"><span>} PyNumberMethods;
+</span></span></code></pre></div><p>One such example of a <code>binaryfunc</code> is the <code>nb_or</code> field, which is the function used to implement the <code>|</code> operator.</p>
+<p>The name can be a bit misleading, because the <code>tp_as_number</code> slot is not just for numeric types (<code>int</code>, <code>float</code>, etc), but also for other types that support binary and unary operations. For example, set intersection <code>set1 &amp; set2</code> is implemented by the <a href="https://github.com/python/cpython/blob/13d8f452a11dc58690cb7aba0cad39bcca18f465/Objects/setobject.c#L2437"><code>nb_and</code></a> slot. Dict merge <code>dict1 | dict2</code> is implemented by <a href="https://github.com/python/cpython/blob/13d8f452a11dc58690cb7aba0cad39bcca18f465/Objects/dictobject.c#L4776"><code>nb_or</code></a>, among others.</p>
+<h2 id="motivation">Motivation</h2>
+<p>Dynamo was originally designed to cover a subset of Python programs that matter most for PyTorch. That design worked well enough to support many important workloads, but it became more difficult to extend to support more Python features. One such example is the <code>dict.__or__</code> implementation <a href="https://github.com/pytorch/pytorch/pull/155072/changes#diff-431bf581d909ccf8d17a8da7382ca72e6a8a81eeb0328cc387464e9a455065dc">added in 2025</a> which was recently replaced by the <code>nb_or</code> slot:</p>
+<p><img src="/images/tp-as-number-slot-and-binary-dispatch/nb_or_old.png" alt="Dynamo ad-hoc impl. of dict.or"></p>
+<p><em>Dynamo&rsquo;s ad-hoc impl. of <code>dict.__or__</code> before the slot-based rewrite</em></p>
+<p>The image above shows the previous implementation of <code>dict.__or__</code> in Dynamo. It tries to do many things at once: inspect the type of <code>other</code> for subclasses, check for the presence of <code>__ror__</code> and so on. This snippet almost certainly misses some corner cases that are not caught by the test suite. It also shows we are trying to mimic parts of the dispatch logic that CPython gets for free but in a completely ad-hoc way.</p>
+<p>Over time, some of the core logic became less about well-defined rules and more about accumulating special cases. When Dynamo discovered a new gap with CPython, we would often patch that gap directly. This was pragmatic, and I have written my fair share of this kind of code, but it made the codebase much harder to reason about.</p>
+<p>The <code>tp_*</code> slot work is an attempt to replace some of the ad-hoc logic with a model based on the same rules CPython uses, improving both behavior coverage and code clarity.</p>
+<h2 id="the-dispatch-algorithm">The dispatch algorithm</h2>
+<p>For a single binary operation <code>left | right</code>, it is natural to think CPython simply calls <code>left.__or__(right)</code>. This is almost right, but there is a catch: in some cases, the right-hand side gets the first chance to handle the operation.</p>
+<p>Internally, binary operations are implemented as <code>PyNumber_*</code> functions in <a href="https://github.com/python/cpython/blob/13d8f452a11dc58690cb7aba0cad39bcca18f465/Objects/abstract.c">abstract.c</a>, which get called when the <a href="https://docs.python.org/3/library/dis.html#opcode-BINARY_OP"><code>BINARY_OP</code></a> opcode is executed. The dispatch is generally handled by the <code>binary_op1</code> function, which roughly follows the algorithm below:</p>
+<ol>
+<li>Look up the slot for <code>left</code>.</li>
+<li>Look up the slot for <code>right</code>.</li>
+<li>If <code>right</code> is a subclass of <code>left</code>, and it provides a different implementation, try <code>right</code> first.</li>
+<li>Otherwise, try <code>left</code> first.</li>
+<li>If the first attempt returns <code>NotImplemented</code>, try the other side.</li>
+<li>If every implementation returns <code>NotImplemented</code>, raise a <code>TypeError</code>.</li>
+</ol>
+<p>This is essentially the algorithm implemented by <a href="https://github.com/python/cpython/blob/13d8f452a11dc58690cb7aba0cad39bcca18f465/Objects/abstract.c#L926-L977"><code>binary_op1</code></a> in CPython. This function works on slots like <code>nb_or</code>, <code>nb_add</code>, etc.</p>
+<h3 id="the-slot1bin-macro">The <code>SLOT1BIN</code> macro</h3>
+<p><code>SLOT1BIN</code> is the glue that allows user-defined types to participate in the binary protocol. Builtin types like <code>int</code>, <code>dict</code>, and <code>set</code> define their slots directly in C, but Python-defined classes expose dunder methods instead. The <code>SLOT1BIN</code> / <code>SLOT1BINFULL</code> macros are responsible for generating wrapper functions to bridge the gap between the slots and the dunder methods.</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;-webkit-text-size-adjust:none;"><code class="language-python" data-lang="python"><span style="display:flex;"><span><span style="color:#66d9ef">class</span> <span style="color:#a6e22e">A</span>:
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">def</span> <span style="color:#a6e22e">__or__</span>(self, other):
+</span></span><span style="display:flex;"><span>        <span style="color:#66d9ef">return</span> <span style="color:#e6db74">&#34;A.__or__&#34;</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">def</span> <span style="color:#a6e22e">__ror__</span>(self, other):
+</span></span><span style="display:flex;"><span>        <span style="color:#66d9ef">return</span> <span style="color:#e6db74">&#34;A.__ror__&#34;</span>
+</span></span></code></pre></div><p>For the class <code>A</code>, once <code>binary_op1</code> dispatches the call to <code>A.tp_as_number.nb_or</code>, it will go through the generated wrapper which maps that slot invocation back to <code>A.__or__</code>.</p>
+<p>The last detail from the <code>SLOT1BIN</code> macro is how it handles the reflected method (<code>__ror__</code> in this case). The wrapper calls the reflected method in two cases.</p>
+<p><strong>Case 1:</strong> <code>Right</code> is a subclass of <code>Left</code> and <code>Right.__ror__</code> is overridden.</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;-webkit-text-size-adjust:none;"><code class="language-python" data-lang="python"><span style="display:flex;"><span><span style="color:#66d9ef">class</span> <span style="color:#a6e22e">Left</span>:
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">def</span> <span style="color:#a6e22e">__or__</span>(self, other):
+</span></span><span style="display:flex;"><span>        <span style="color:#66d9ef">return</span> <span style="color:#e6db74">&#34;handled by Left&#34;</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">class</span> <span style="color:#a6e22e">Right</span>(Left):
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">def</span> <span style="color:#a6e22e">__ror__</span>(self, other):
+</span></span><span style="display:flex;"><span>        <span style="color:#66d9ef">return</span> <span style="color:#e6db74">&#34;handled by Right&#34;</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>print(Left() <span style="color:#f92672">|</span> Right())  <span style="color:#75715e"># &#34;handled by Right&#34;</span>
+</span></span></code></pre></div><p><strong>Case 2:</strong> <code>Left.__or__</code> returns <code>NotImplemented</code> and <code>Left</code> and <code>Right</code> are different types.</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;-webkit-text-size-adjust:none;"><code class="language-python" data-lang="python"><span style="display:flex;"><span><span style="color:#66d9ef">class</span> <span style="color:#a6e22e">Left</span>:
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">def</span> <span style="color:#a6e22e">__or__</span>(self, other):
+</span></span><span style="display:flex;"><span>        <span style="color:#66d9ef">return</span> NotImplemented
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">class</span> <span style="color:#a6e22e">Right</span>:
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">def</span> <span style="color:#a6e22e">__ror__</span>(self, other):
+</span></span><span style="display:flex;"><span>        <span style="color:#66d9ef">return</span> <span style="color:#e6db74">&#34;handled by Right&#34;</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>print(Left() <span style="color:#f92672">|</span> Right())  <span style="color:#75715e"># &#34;handled by Right&#34;</span>
+</span></span></code></pre></div><p>I suggest reading the <a href="https://github.com/python/cpython/blob/13d8f452a11dc58690cb7aba0cad39bcca18f465/Objects/typeobject.c#L9211-L9252">implementation</a> of <code>SLOT1BINFULL</code> to understand how CPython implements this logic.</p>
+<h2 id="the-new-dict__or__-implementation">The new <code>dict.__or__</code> implementation</h2>
+<p>Recall that <code>tp_as_number</code> points to a <code>PyNumberMethods</code> struct, and <code>nb_or</code> is the entry in that struct used by the <code>|</code> operator. The <code>nb_</code> prefix is the naming convention for the category of &ldquo;number methods&rdquo;. With the new slot-based implementation, the <code>dict.nb_or</code> slot becomes a straight translation of the CPython implementation to Python:</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;-webkit-text-size-adjust:none;"><code class="language-c" data-lang="c"><span style="display:flex;"><span><span style="color:#66d9ef">static</span> PyObject <span style="color:#f92672">*</span>
+</span></span><span style="display:flex;"><span><span style="color:#a6e22e">dict_or</span>(PyObject <span style="color:#f92672">*</span>self, PyObject <span style="color:#f92672">*</span>other)
+</span></span><span style="display:flex;"><span>{
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">if</span> (<span style="color:#f92672">!</span><span style="color:#a6e22e">PyDict_Check</span>(self) <span style="color:#f92672">||</span> <span style="color:#f92672">!</span><span style="color:#a6e22e">PyDict_Check</span>(other)) {
+</span></span><span style="display:flex;"><span>        Py_RETURN_NOTIMPLEMENTED;
+</span></span><span style="display:flex;"><span>    }
+</span></span><span style="display:flex;"><span>    PyObject <span style="color:#f92672">*</span>new <span style="color:#f92672">=</span> <span style="color:#a6e22e">PyDict_Copy</span>(self);
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">if</span> (new <span style="color:#f92672">==</span> NULL) {
+</span></span><span style="display:flex;"><span>        <span style="color:#66d9ef">return</span> NULL;
+</span></span><span style="display:flex;"><span>    }
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">if</span> (<span style="color:#a6e22e">dict_update_arg</span>(new, other)) {
+</span></span><span style="display:flex;"><span>        <span style="color:#a6e22e">Py_DECREF</span>(new);
+</span></span><span style="display:flex;"><span>        <span style="color:#66d9ef">return</span> NULL;
+</span></span><span style="display:flex;"><span>    }
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">return</span> new;
+</span></span><span style="display:flex;"><span>}
+</span></span></code></pre></div><p><em>CPython impl. for dict <code>tp_as_number.nb_or</code> (<a href="https://github.com/python/cpython/blob/13d8f452a11dc58690cb7aba0cad39bcca18f465/Objects/dictobject.c#L4643-L4658">source</a>)</em></p>
+<p>And here is the equivalent Dynamo implementation:</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;-webkit-text-size-adjust:none;"><code class="language-python" data-lang="python"><span style="display:flex;"><span><span style="color:#66d9ef">def</span> <span style="color:#a6e22e">nb_or_impl</span>(
+</span></span><span style="display:flex;"><span>    self,
+</span></span><span style="display:flex;"><span>    tx: Any,
+</span></span><span style="display:flex;"><span>    other: VariableTracker,
+</span></span><span style="display:flex;"><span>    reverse: bool <span style="color:#f92672">=</span> <span style="color:#66d9ef">False</span>,
+</span></span><span style="display:flex;"><span>) <span style="color:#f92672">-&gt;</span> VariableTracker:
+</span></span><span style="display:flex;"><span>    self_, other_ <span style="color:#f92672">=</span> (other, self) <span style="color:#66d9ef">if</span> reverse <span style="color:#66d9ef">else</span> (self, other)
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">if</span> pydict_check(self_) <span style="color:#f92672">and</span> pydict_check(other_):
+</span></span><span style="display:flex;"><span>        new <span style="color:#f92672">=</span> self_<span style="color:#f92672">.</span>call_method(tx, <span style="color:#e6db74">&#34;copy&#34;</span>, [], {})
+</span></span><span style="display:flex;"><span>        new<span style="color:#f92672">.</span>call_method(tx, <span style="color:#e6db74">&#34;update&#34;</span>, [other_], {})
+</span></span><span style="display:flex;"><span>        <span style="color:#66d9ef">return</span> new
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">return</span> ConstantVariable<span style="color:#f92672">.</span>create(NotImplemented)
+</span></span></code></pre></div><p><em>Dynamo impl. of dict <code>nb_or</code> (<a href="https://github.com/pytorch/pytorch/blob/862cb8fb254273306ab4fe1e465d5b06d04a48c1/torch/_dynamo/variables/dicts.py#L729-L741">source</a>)</em></p>
+<p>The <code>binary_op1</code>, <code>SLOT1BIN</code> and <code>nb_or</code> were added to PyTorch in the pull request <a href="https://github.com/pytorch/pytorch/pull/181326">#181326</a> as part of the effort to support not just <code>nb_or</code> but the <code>tp_as_number</code> slot in general.</p>
+<p>The slot-based implementation is useful for a few things:</p>
+<ul>
+<li>The new behavior is consolidated in a shared dispatch mechanism instead of being scattered in many ad-hoc ones across the codebase</li>
+<li>The translation from C to Python can be partially done by an LLM</li>
+<li>One could validate the implementation using the CPython tests</li>
+</ul>
+<p>The generated code still needs to be reviewed and tested, but it can significantly speed up porting the remaining slots.</p>
+<h2 id="leveraging-the-cpython-test-suite">Leveraging the CPython test suite</h2>
+<p>We use the CPython tests to validate the slots implementation. CPython has a test suite containing more than 750 test files that span from I/O to the standard library, representing more than 30 years of development effort in implementing the Python interpreter.</p>
+<p>Last year I started an effort to port a subset of those tests to Dynamo. PyTorch currently runs 4,729 tests which are spread across 45 test files. It is a small subset, but it covers many of the core behaviors that Dynamo needs to model: builtin types, data structures, exceptions, and math operations.</p>
+<p>For more information, check out the dashboard I maintain on <a href="https://dynamo-skips-stokfmqs6saxc7ys4tqojw.streamlit.app/">Streamlit</a>, which tracks the progress of running the CPython tests on PyTorch main branch. When this effort started, only 37% of those tests were passing. At the time of writing this post, this number is close to 50%.</p>
+<h2 id="conclusion-and-next-steps">Conclusion and next steps</h2>
+<p>The port of <code>binary_op1</code> / <code>SLOT1BIN</code> to Dynamo was implemented in the pull request <a href="https://github.com/pytorch/pytorch/pull/181326">#181326</a>. This work was part of the effort to add <code>nb_or</code> as the first <code>tp_as_number</code> slot supported by Dynamo.</p>
+<p>This work aligns with the vision described in Animesh&rsquo;s blogpost: to move from an implementation that works by accident to a model that we can reason about and validate against CPython source code and tests. The next steps involve porting the remaining slots in <code>PyTypeObject</code> and expanding the test coverage to ensure we are correctly modeling CPython&rsquo;s behavior.</p>
+<h2 id="references">References</h2>
+<ul>
+<li><a href="https://docs.pytorch.org/devlogs/dynamo/2026-05-13-agent-friendly-dynamo/">agent friendly dynamo - PyTorch DevLog</a></li>
+<li><a href="https://github.com/pytorch/pytorch/pull/181326">PyTorch #181326</a></li>
+<li><a href="https://github.com/python/cpython/blob/13d8f452a11dc58690cb7aba0cad39bcca18f465/Objects/abstract.c#L926-L977">CPython binary_op1</a></li>
+<li><a href="https://github.com/python/cpython/blob/13d8f452a11dc58690cb7aba0cad39bcca18f465/Objects/typeobject.c#L9211-L9252">CPython SLOT1BINFULL</a></li>
+</ul>
+
+  </div>
+</section>
+
+<section id="tag-pane" class="meta">
+  
+  <div class="d-flex flex-column flex-md-row justify-content-between">
+    <h6 class="text-end meta">
+      
+      
+      
+      
+    </h6>
+  </div>
+  
+</section>
+
+
+
+<section id="menu-pane" class="menu text-center">
+  
+  <nav aria-label="Page navigation">
+    <ul class="pagination justify-content-center">
+      
+      
+      <li class="menu-item">
+        <a class="menu-item" href="https://guilhermeleobas.github.io/blog/enhancements-numba/">&lt; prev</a>
+      </li>
+      
+
+      <li class="menu-item">
+        
+        <span class="menu-item">&nbsp;|&nbsp;</span>
+        
+        <a class="menu-item" href="/blog">blog</a>
+        
+      </li>
+
+      
+      
+    </ul>
+  </nav>
+  
+  <h4 class="text-center mt-3"><a class="menu-item" href="https://guilhermeleobas.github.io/">home</a></h4>
+</section>
+
+<footer class="text-center footer">
+  <hr />
+  
+  <h6 class="text-center copyright"></h6>
+  
+  <h6 class="text-center powered"><a href="https://gohugo.io/">Hugo</a> <a
+      href="https://github.com/shenoydotme/hugo-goa">Goa</a> by <a href="https://shenoy.me">shenoydotme</a> and <a
+      href="https://papyrusapps.com">Papyrus Apps</a></h6>
+  
+  
+  
+
+</footer>
+
+</div>
+
+
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js"></script>
+
+
+<script>hljs.highlightAll();</script>
+
+
+
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"
+    integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz"
+    crossorigin="anonymous"></script>
+<script src="/js/custom.js"></script>
+</body>
+
+</html>
+

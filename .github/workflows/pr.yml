@@ -1,0 +1,36 @@
+name: PR
+
+on:
+  pull_request:
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          submodules: true
+
+      - uses: actions/configure-pages@v5
+
+      - uses: actions/setup-go@v5
+        with:
+          go-version: stable
+
+      - uses: actions/cache@v4
+        with:
+          path: ~/go/pkg/mod
+          key: ${{ runner.os }}-go-${{ hashFiles('**/go.sum') }}
+          restore-keys: |
+            ${{ runner.os }}-go-
+
+      - uses: actions/cache@v4
+        with:
+          path: /tmp/.hugo_cache
+          key: ${{ runner.os }}-hugo-${{ hashFiles('config.toml') }}
+          restore-keys: |
+            ${{ runner.os }}-hugo-
+
+      - run: go install github.com/gohugoio/hugo@latest
+
+      - run: hugo --gc --minify --buildFuture
