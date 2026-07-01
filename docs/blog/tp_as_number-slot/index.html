@@ -40,7 +40,7 @@
         <link rel="manifest" href="/site.webmanifest">
         <meta name="theme-color" content="#ffffff"></head>
 
-    <body lang="en-us">
+    <body lang="en-us" class="section-blog">
         <div class="container my-auto">
 
 <header class="text-start title">
@@ -121,7 +121,7 @@
 <p>The name can be a bit misleading, because the <code>tp_as_number</code> slot is not just for numeric types (<code>int</code>, <code>float</code>, etc), but also for other types that support binary and unary operations. For example, set intersection <code>set1 &amp; set2</code> is implemented by the <a href="https://github.com/python/cpython/blob/13d8f452a11dc58690cb7aba0cad39bcca18f465/Objects/setobject.c#L2437"><code>nb_and</code></a> slot. Dict merge <code>dict1 | dict2</code> is implemented by <a href="https://github.com/python/cpython/blob/13d8f452a11dc58690cb7aba0cad39bcca18f465/Objects/dictobject.c#L4776"><code>nb_or</code></a>, among others.</p>
 <h2 id="motivation">Motivation</h2>
 <p>Dynamo was originally designed to cover a subset of Python programs that matter most for PyTorch. That design worked well enough to support many important workloads, but it became more difficult to extend to support more Python features. One such example is the <code>dict.__or__</code> implementation <a href="https://github.com/pytorch/pytorch/pull/155072/changes#diff-431bf581d909ccf8d17a8da7382ca72e6a8a81eeb0328cc387464e9a455065dc">added in 2025</a> which was recently replaced by the <code>nb_or</code> slot:</p>
-<p><img src="images/tp-as-number-slot-and-binary-dispatch/nb_or_old.png" alt="Dynamo ad-hoc impl. of dict.or"></p>
+<p><img src="/images/tp-as-number-slot-and-binary-dispatch/nb_or_old.png" alt="Dynamo ad-hoc impl. of dict.or"></p>
 <p><em>Dynamo&rsquo;s ad-hoc impl. of <code>dict.__or__</code> before the slot-based rewrite</em></p>
 <p>The image above shows the previous implementation of <code>dict.__or__</code> in Dynamo. It tries to do many things at once: inspect the type of <code>other</code> for subclasses, check for the presence of <code>__ror__</code> and so on. This snippet almost certainly misses some corner cases that are not caught by the test suite. It also shows we are trying to mimic parts of the dispatch logic that CPython gets for free but in a completely ad-hoc way.</p>
 <p>Over time, some of the core logic became less about well-defined rules and more about accumulating special cases. When Dynamo discovered a new gap with CPython, we would often patch that gap directly. This was pragmatic, and I have written my fair share of this kind of code, but it made the codebase much harder to reason about.</p>

@@ -59,7 +59,7 @@ The name can be a bit misleading, because the `tp_as_number` slot is not just fo
 
 Dynamo was originally designed to cover a subset of Python programs that matter most for PyTorch. That design worked well enough to support many important workloads, but it became more difficult to extend to support more Python features. One such example is the `dict.__or__` implementation [added in 2025](https://github.com/pytorch/pytorch/pull/155072/changes#diff-431bf581d909ccf8d17a8da7382ca72e6a8a81eeb0328cc387464e9a455065dc) which was recently replaced by the `nb_or` slot:
 
-![Dynamo ad-hoc impl. of dict.__or__](images/tp-as-number-slot-and-binary-dispatch/nb_or_old.png)
+![Dynamo ad-hoc impl. of dict.__or__](/images/tp-as-number-slot-and-binary-dispatch/nb_or_old.png)
 
 *Dynamo's ad-hoc impl. of `dict.__or__` before the slot-based rewrite*
 

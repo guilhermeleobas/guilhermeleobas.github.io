@@ -13,7 +13,7 @@ layoutdir = "layouts"
 [params]
 	author = "Guilherme Leobas"
 	title = "Guilherme Leobas"
-	description = "Compiler enthusiast, Amateur triathlete and Open-Source at [@quansightai](https://twitter.com/quansightai)"
+	description = "Compiler enthusiast, Amateur triathlete and Open-Source"
 	authorimage = "img.jpg"
 	dateformat = "Jan 2, 2006"
 
@@ -21,7 +21,6 @@ layoutdir = "layouts"
 [params.social]
 	github = "guilhermeleobas"
 	linkedin = "guilhermeleobas"
-	twitter = "gvleobas"
 
 ## Extras
 [params.extra]
