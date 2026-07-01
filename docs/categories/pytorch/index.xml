@@ -1,5 +1,24 @@
-<?xml version="1.0" encoding="utf-8" standalone="yes"?><rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom"><channel><title>PyTorch on</title><link>https://guilhermeleobas.github.io/categories/pytorch/</link><description>Recent content in PyTorch on</description><generator>Hugo</generator><language>en-us</language><lastBuildDate>Tue, 30 Jun 2026 00:00:00 +0000</lastBuildDate><atom:link href="https://guilhermeleobas.github.io/categories/pytorch/index.xml" rel="self" type="application/rss+xml"/><item><title>The tp_as_number Slot and Binary Operation Dispatch in CPython</title><link>https://guilhermeleobas.github.io/blog/tp_as_number-slot/</link><pubDate>Tue, 30 Jun 2026 00:00:00 +0000</pubDate><guid>https://guilhermeleobas.github.io/blog/tp_as_number-slot/</guid><description>&lt;p&gt;&lt;strong&gt;Note&lt;/strong&gt;: This article originally appeared in &lt;a href="https://openteams.com/tp-as-number-slot-and-binary-dispatch/"&gt;OpenTeams blog&lt;/a&gt;.&lt;/p&gt;
-&lt;p&gt;Recently Animesh Jain from Meta published a &lt;a href="https://docs.pytorch.org/devlogs/dynamo/2026-05-13-agent-friendly-dynamo/"&gt;blogpost&lt;/a&gt; about the work we are doing in Dynamo. The gist of it is that we are refactoring Dynamo&amp;rsquo;s object model to mirror CPython &lt;a href="https://docs.python.org/3/c-api/typeobj.html#tp-slots"&gt;PyTypeObject slots&lt;/a&gt;. Given that, I thought it would be interesting to write a follow-up post about one small corner of that work: the &lt;code&gt;tp_as_number&lt;/code&gt; slot, and how binary operations are dispatched in CPython.&lt;/p&gt;
-&lt;h2 id="background"&gt;Background&lt;/h2&gt;
-&lt;h3 id="torchdynamo"&gt;TorchDynamo&lt;/h3&gt;
-&lt;p&gt;TorchDynamo (or simply Dynamo) is the JIT compiler that PyTorch uses to make PyTorch programs faster. Dynamo hooks into the eval frame API (&lt;a href="https://peps.python.org/pep-0523/"&gt;PEP 523&lt;/a&gt;) to intercept the Python bytecode before it runs and symbolically trace it to an intermediate representation called &lt;em&gt;FX Graph&lt;/em&gt;. It is worth mentioning that Dynamo is not a general-purpose Python implementation. It is designed to optimize a very specific class of programs and it works quite well for that purpose.&lt;/p&gt;</description></item></channel></rss>
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+	<channel>
+		<title>PyTorch on </title>
+		<link>https://guilhermeleobas.github.io/categories/pytorch/</link>
+		<description>Recent content in PyTorch on </description>
+		<generator>Hugo</generator>
+		<language>en-us</language>
+		
+		
+		
+		
+			<lastBuildDate>Tue, 30 Jun 2026 00:00:00 +0000</lastBuildDate>
+		
+			<atom:link href="https://guilhermeleobas.github.io/categories/pytorch/index.xml" rel="self" type="application/rss+xml" />
+			<item>
+				<title>The tp_as_number Slot and Binary Operation Dispatch in CPython</title>
+				<link>https://guilhermeleobas.github.io/blog/tp_as_number-slot/</link>
+				<pubDate>Tue, 30 Jun 2026 00:00:00 +0000</pubDate>
+				<guid>https://guilhermeleobas.github.io/blog/tp_as_number-slot/</guid>
+				<description>&lt;p&gt;&lt;strong&gt;Note&lt;/strong&gt;: This article originally appeared in &lt;a href=&#34;https://openteams.com/tp-as-number-slot-and-binary-dispatch/&#34;&gt;OpenTeams blog&lt;/a&gt;.&lt;/p&gt;&#xA;&lt;p&gt;Recently Animesh Jain from Meta published a &lt;a href=&#34;https://docs.pytorch.org/devlogs/dynamo/2026-05-13-agent-friendly-dynamo/&#34;&gt;blogpost&lt;/a&gt; about the work we are doing in Dynamo. The gist of it is that we are refactoring Dynamo&amp;rsquo;s object model to mirror CPython &lt;a href=&#34;https://docs.python.org/3/c-api/typeobj.html#tp-slots&#34;&gt;PyTypeObject slots&lt;/a&gt;. Given that, I thought it would be interesting to write a follow-up post about one small corner of that work: the &lt;code&gt;tp_as_number&lt;/code&gt; slot, and how binary operations are dispatched in CPython.&lt;/p&gt;&#xA;&lt;h2 id=&#34;background&#34;&gt;Background&lt;/h2&gt;&#xA;&lt;h3 id=&#34;torchdynamo&#34;&gt;TorchDynamo&lt;/h3&gt;&#xA;&lt;p&gt;TorchDynamo (or simply Dynamo) is the JIT compiler that PyTorch uses to make PyTorch programs faster. Dynamo hooks into the eval frame API (&lt;a href=&#34;https://peps.python.org/pep-0523/&#34;&gt;PEP 523&lt;/a&gt;) to intercept the Python bytecode before it runs and symbolically trace it to an intermediate representation called &lt;em&gt;FX Graph&lt;/em&gt;. It is worth mentioning that Dynamo is not a general-purpose Python implementation. It is designed to optimize a very specific class of programs and it works quite well for that purpose.&lt;/p&gt;</description>
+			</item>
+	</channel>
+</rss>
