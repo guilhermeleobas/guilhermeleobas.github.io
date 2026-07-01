@@ -1,8 +1,56 @@
-<?xml version="1.0" encoding="utf-8" standalone="yes"?><rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom"><channel><title/><link>https://guilhermeleobas.github.io/</link><description>Recent content on</description><generator>Hugo -- gohugo.io</generator><language>en-us</language><lastBuildDate>Thu, 25 Feb 2021 00:00:00 +0000</lastBuildDate><atom:link href="https://guilhermeleobas.github.io/index.xml" rel="self" type="application/rss+xml"/><item><title>Enhancements to Numba's guvectorize decorator</title><link>https://guilhermeleobas.github.io/blog/enhancements-numba/</link><pubDate>Thu, 25 Feb 2021 00:00:00 +0000</pubDate><guid>https://guilhermeleobas.github.io/blog/enhancements-numba/</guid><description>Note: This article originally appeared in Quansight Labs blog.</description></item><item><title>About Me</title><link>https://guilhermeleobas.github.io/about/</link><pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate><guid>https://guilhermeleobas.github.io/about/</guid><description>Work Hi, my name is Guilherme Leobas. I am currently working at @quansightai as a Software Engineer. Before joining Quansight, I was a MSc student at the Federal University of Minas Gerais (dcc/ufmg) working with compiler optimizations under the supervision of professor Fernando Magno.
-As part of my work at Quansight, I have contributed to a number of open source softwares:
-Numba, a NumPy aware JIT compiler using LLVM RBC, a remote JIT compiler built on top of Numba OmniSciDB, one of the fastest SQL engine in the world PyTorch, an open source ML framework Free time I am also an amateur triathlete.</description></item><item><title>Projects</title><link>https://guilhermeleobas.github.io/projects/</link><pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate><guid>https://guilhermeleobas.github.io/projects/</guid><description> Benchmarks - A collection of more than 220 benchmarks used by compilers engineers to measure compiler optimizations.
-TF - A simple test framework built using bash to compile, instrument and profile benchmarks.
-cftool - Get inputs and outputs for a specific problem or contest on Codeforces or URI.
-IRView - Generate dot/pdf files of llvm IR from Sublime Text</description></item><item><title>Publications</title><link>https://guilhermeleobas.github.io/publications/</link><pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate><guid>https://guilhermeleobas.github.io/publications/</guid><description>Guilherme Vieira Leobas and Fernando Magno Quintão Pereira. Semiring Optimizations: Dynamic Elision of Expressions with Identity and Absorbing Elements. OOPSLA 2020.
-Caio Lima, Junio Cezar, Guilherme Vieira Leobas, Erven Rohou and Fernando Magno Quintão Pereira. Guided Just-in-Time Specialization. Science of Computer Programming, 185, 2020.
-Fernando Magno Quintão Pereira, Guilherme Vieira Leobas and Abdoulaye Gamatié. Static Prediction of Silent Stores. ACM Transactions on Architecture and Code Optimization.</description></item></channel></rss>
+<?xml version="1.0" encoding="utf-8" standalone="yes"?><rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom"><channel><title/><link>https://guilhermeleobas.github.io/</link><description>Recent content on</description><generator>Hugo</generator><language>en-us</language><lastBuildDate>Tue, 30 Jun 2026 00:00:00 +0000</lastBuildDate><atom:link href="https://guilhermeleobas.github.io/index.xml" rel="self" type="application/rss+xml"/><item><title>The tp_as_number Slot and Binary Operation Dispatch in CPython</title><link>https://guilhermeleobas.github.io/blog/tp_as_number-slot/</link><pubDate>Tue, 30 Jun 2026 00:00:00 +0000</pubDate><guid>https://guilhermeleobas.github.io/blog/tp_as_number-slot/</guid><description>&lt;p&gt;&lt;strong&gt;Note&lt;/strong&gt;: This article originally appeared in &lt;a href="https://openteams.com/tp-as-number-slot-and-binary-dispatch/"&gt;OpenTeams blog&lt;/a&gt;.&lt;/p&gt;
+&lt;p&gt;Recently Animesh Jain from Meta published a &lt;a href="https://docs.pytorch.org/devlogs/dynamo/2026-05-13-agent-friendly-dynamo/"&gt;blogpost&lt;/a&gt; about the work we are doing in Dynamo. The gist of it is that we are refactoring Dynamo&amp;rsquo;s object model to mirror CPython &lt;a href="https://docs.python.org/3/c-api/typeobj.html#tp-slots"&gt;PyTypeObject slots&lt;/a&gt;. Given that, I thought it would be interesting to write a follow-up post about one small corner of that work: the &lt;code&gt;tp_as_number&lt;/code&gt; slot, and how binary operations are dispatched in CPython.&lt;/p&gt;
+&lt;h2 id="background"&gt;Background&lt;/h2&gt;
+&lt;h3 id="torchdynamo"&gt;TorchDynamo&lt;/h3&gt;
+&lt;p&gt;TorchDynamo (or simply Dynamo) is the JIT compiler that PyTorch uses to make PyTorch programs faster. Dynamo hooks into the eval frame API (&lt;a href="https://peps.python.org/pep-0523/"&gt;PEP 523&lt;/a&gt;) to intercept the Python bytecode before it runs and symbolically trace it to an intermediate representation called &lt;em&gt;FX Graph&lt;/em&gt;. It is worth mentioning that Dynamo is not a general-purpose Python implementation. It is designed to optimize a very specific class of programs and it works quite well for that purpose.&lt;/p&gt;</description></item><item><title>Enhancements to Numba's guvectorize decorator</title><link>https://guilhermeleobas.github.io/blog/enhancements-numba/</link><pubDate>Thu, 25 Feb 2021 00:00:00 +0000</pubDate><guid>https://guilhermeleobas.github.io/blog/enhancements-numba/</guid><description>&lt;p&gt;Note: This article originally appeared in &lt;a href="https://labs.quansight.org/blog/2021/02/enhancements-to-numba-guvectorize-decorator/"&gt;Quansight Labs blog&lt;/a&gt;.&lt;/p&gt;</description></item><item><title>About Me</title><link>https://guilhermeleobas.github.io/about/</link><pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate><guid>https://guilhermeleobas.github.io/about/</guid><description>&lt;h4 id="work"&gt;Work&lt;/h4&gt;
+&lt;p&gt;Hi, my name is Guilherme Leobas. I am currently working at &lt;a href="https://twitter.com/quansightai"&gt;@quansightai&lt;/a&gt;
+as a Software Engineer. Before joining Quansight, I was a MSc student at the Federal University of
+Minas Gerais (&lt;a href="https://www.dcc.ufmg.br/dcc/?q=en"&gt;dcc/ufmg&lt;/a&gt;) working with compiler optimizations
+under the supervision of professor &lt;a href="https://homepages.dcc.ufmg.br/~fernando/"&gt;Fernando Magno&lt;/a&gt;.&lt;/p&gt;
+&lt;p&gt;As part of my work at Quansight, I have contributed to a number of open source softwares:&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;&lt;a href="https://github.com/numba/numba/pulls/guilhermeleobas"&gt;Numba&lt;/a&gt;, a NumPy aware JIT compiler using LLVM&lt;/li&gt;
+&lt;li&gt;&lt;a href="https://github.com/xnd-project/rbc/pulls/guilhermeleobas"&gt;RBC&lt;/a&gt;, a remote JIT compiler built on top of Numba&lt;/li&gt;
+&lt;li&gt;&lt;a href="https://github.com/omnisci/omniscidb/commits?author=guilhermeleobas"&gt;OmniSciDB&lt;/a&gt;, one of the fastest SQL engine in the world&lt;/li&gt;
+&lt;li&gt;&lt;a href="https://github.com/pytorch/pytorch/pulls/guilhermeleobas"&gt;PyTorch&lt;/a&gt;, an open source ML framework&lt;/li&gt;
+&lt;/ul&gt;
+&lt;hr&gt;
+&lt;h4 id="free-time"&gt;Free time&lt;/h4&gt;
+&lt;p&gt;I am also an amateur triathlete. Follow me on &lt;a href="https://www.zwift.com/athlete/81969471-9f8a-4541-bbdd-9f2780109bd4"&gt;Zwift&lt;/a&gt;
+and we can cycle together someday.&lt;/p&gt;</description></item><item><title>Projects</title><link>https://guilhermeleobas.github.io/projects/</link><pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate><guid>https://guilhermeleobas.github.io/projects/</guid><description>&lt;ul&gt;
+&lt;li&gt;
+&lt;p&gt;&lt;a href="https://github.com/guilhermeleobas/Benchmarks"&gt;Benchmarks&lt;/a&gt; - A collection of more than
+220 benchmarks used by compilers engineers to measure compiler optimizations.&lt;/p&gt;
+&lt;/li&gt;
+&lt;li&gt;
+&lt;p&gt;&lt;a href="https://github.com/guilhermeleobas/tf"&gt;TF&lt;/a&gt; - A simple test framework built
+using bash to compile, instrument and profile benchmarks.&lt;/p&gt;
+&lt;/li&gt;
+&lt;li&gt;
+&lt;p&gt;&lt;a href="https://github.com/guilhermeleobas/cftool"&gt;cftool&lt;/a&gt; - Get inputs and outputs for a
+specific problem or contest on Codeforces or URI.&lt;/p&gt;
+&lt;/li&gt;
+&lt;li&gt;
+&lt;p&gt;&lt;a href="https://github.com/guilhermeleobas/irview"&gt;IRView&lt;/a&gt; - Generate dot/pdf files of llvm IR
+from Sublime Text&lt;/p&gt;
+&lt;/li&gt;
+&lt;/ul&gt;</description></item><item><title>Publications</title><link>https://guilhermeleobas.github.io/publications/</link><pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate><guid>https://guilhermeleobas.github.io/publications/</guid><description>&lt;ul&gt;
+&lt;li&gt;
+&lt;p&gt;&lt;strong&gt;Guilherme Vieira Leobas&lt;/strong&gt; and Fernando Magno Quintão Pereira.
+&lt;a href="https://homepages.dcc.ufmg.br/~fernando/publications/papers/LeobasOOPSLA20.pdf"&gt;Semiring Optimizations: Dynamic Elision of Expressions with Identity and Absorbing Elements&lt;/a&gt;.
+OOPSLA 2020.&lt;/p&gt;
+&lt;/li&gt;
+&lt;li&gt;
+&lt;p&gt;Caio Lima, Junio Cezar, &lt;strong&gt;Guilherme Vieira Leobas&lt;/strong&gt;, Erven Rohou and Fernando Magno Quintão Pereira.
+&lt;a href="https://homepages.dcc.ufmg.br/~fernando/publications/papers/CaioSCP20.pdf"&gt;Guided Just-in-Time Specialization&lt;/a&gt;.
+Science of Computer Programming, 185, 2020.&lt;/p&gt;
+&lt;/li&gt;
+&lt;li&gt;
+&lt;p&gt;Fernando Magno Quintão Pereira, &lt;strong&gt;Guilherme Vieira Leobas&lt;/strong&gt; and Abdoulaye Gamatié.
+&lt;a href="https://homepages.dcc.ufmg.br/~fernando/publications/papers/PEREIRA_TACO_19.pdf"&gt;Static Prediction of Silent Stores&lt;/a&gt;.
+ACM Transactions on Architecture and Code Optimization. 15, 4, Article 44, 2019.&lt;/p&gt;
+&lt;/li&gt;
+&lt;li&gt;
+&lt;p&gt;&lt;strong&gt;Guilherme V. Leobas&lt;/strong&gt;, Breno C. F. Guimaraes and Fernando M. Q. Pereira.
+&lt;a href="https://homepages.dcc.ufmg.br/~fernando/publications/papers/SBLP18_leobas.pdf"&gt;More than Meets the Eye: Invisible Instructions&lt;/a&gt;
+In proceedings of the XXII Brazilian Symposium on Programming Languages (SBLP). July, 2018.&lt;/p&gt;</description></item></channel></rss>

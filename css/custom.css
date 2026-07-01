@@ -1,1 +1,8 @@
-/* Add custom CSS here. */
+.section-blog .container {
+  max-width: 1200px;
+}
+
+img {
+  max-width: 100%;
+  height: auto;
+}
